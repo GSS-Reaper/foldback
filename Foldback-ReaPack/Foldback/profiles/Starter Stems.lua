@@ -11,7 +11,7 @@ return {
     { id = "guitars", name = "Guitars", width = "stereo", ui_color = { 166,  92,  89 } },
     { id = "keys",    name = "Keys",    width = "stereo", ui_color = { 117, 152, 112 } },
     { id = "vocals",  name = "Vocals",  width = "mono",   ui_color = { 116, 128, 180 } },
-    { id = "click",   name = "Click",   width = "mono",   metronome = true },
+    { id = "click",   name = "Metronome", width = "mono", metronome = true },
   },
   options = {
     default_stems = "drums bass guitars vocals",

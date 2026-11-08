@@ -168,6 +168,8 @@ end
 
 local function move(list, i, d)
   local j = i + d
+  -- in mix mode the Click (metronome) row is hidden: step over it
+  if S.ed and list == S.ed.stems and C.is_mix(S.ed) then while list[j] and list[j].metronome do j = j + d end end
   if j < 1 or j > #list then return end
   list[i], list[j] = list[j], list[i]
 end
@@ -178,6 +180,7 @@ local function problems()
   local bad, warn = {}, {}
   local used = {}
   for _, s in ipairs(ed.stems) do
+   if not (C.is_mix(ed) and s.metronome) then   -- mix mode ignores the Click (metronome) row
     if (s.name or ""):match("^%s*$") then bad[#bad + 1] = "A cue has no name." end
     local _, why, unassigned = C.stem_output(ed, s)
     if why and not unassigned then warn[#warn + 1] = why .. "." end
@@ -185,6 +188,7 @@ local function problems()
       if used[o] then warn[#warn + 1] = "REAPER output " .. (o + 1) .. " is used by both " .. used[o] .. " and " .. s.name .. " (they can't both be in one session)." end
       used[o] = used[o] or s.name
     end
+   end
   end
   if ed.monitor_output ~= nil and not C.output_index(ed.monitor_output) then
     warn[#warn + 1] = "Listen output '" .. tostring(ed.monitor_output) .. "' isn't one of this computer's outputs."
@@ -199,6 +203,12 @@ local EXAMPLE_MIXES = {
   { id = "artist3", name = "Artist 3", width = "stereo", ui_color = { 166,  92,  89 } },
   { id = "artist4", name = "Artist 4", width = "stereo", ui_color = { 148, 116, 180 } },
 }
+local EXAMPLE_STEMS = {
+  { id = "drums",   name = "Drums",   width = "stereo", ui_color = { 169, 157,  96 } },
+  { id = "guitars", name = "Guitars", width = "stereo", ui_color = { 166,  92,  89 } },
+  { id = "bass",    name = "Bass",    width = "mono",   ui_color = { 148, 116, 180 } },
+  { id = "vocals",  name = "Vocals",  width = "mono",   ui_color = { 116, 128, 180 } },
+}
 
 local function tab_cues()
   local ed = S.ed
@@ -211,7 +221,7 @@ local function tab_cues()
   if ImGui.BeginCombo(ctx, "##cuemode", MIX and "Mixes (one stereo mix per performer)" or "Stems (groups of instruments)") then
     if ImGui.Selectable(ctx, "Stems (groups of instruments)", not MIX) and MIX then
       ed.cue_mode = "stems"
-      note("Cue type: stems. Cue widths stay as they are now; set any you want mono in the list below.")
+      note("Cue type: stems. Cue widths stay as they are now; set any you want mono in the list below. For a typical starting list, use \"Replace cues with Drums, Guitars, Bass, Vocals\" under the list.")
     end
     if ImGui.Selectable(ctx, "Mixes (one stereo mix per performer)", MIX) and not MIX then
       ed.cue_mode = "mix"
@@ -243,6 +253,7 @@ local function tab_cues()
     ImGui.TableSetupColumn(ctx, "", ImGui.TableColumnFlags_WidthFixed, 70)
     ImGui.TableHeadersRow(ctx)
     for i, s in ipairs(ed.stems) do
+     if not (MIX and s.metronome) then   -- mix mode has its own Click track (Options), so the Click (metronome) row is hidden
       ImGui.PushID(ctx, "cue" .. i)
       ImGui.TableNextRow(ctx)
       ImGui.TableNextColumn(ctx)
@@ -261,16 +272,22 @@ local function tab_cues()
       local chn, nv = ImGui.InputText(ctx, "##name", s.name)
       if chn then s.name = nv end
       ImGui.TableNextColumn(ctx)
-      local kind = s.metronome and "Click (metronome)" or (s.width == "stereo" and "Stereo" or "Mono")
-      ImGui.SetNextItemWidth(ctx, 132)
-      if ImGui.BeginCombo(ctx, "##type", kind) then
-        if ImGui.Selectable(ctx, "Stereo", kind == "Stereo") then s.width = "stereo"; s.metronome = nil end
-        if not MIX and ImGui.Selectable(ctx, "Mono", kind == "Mono") then s.width = "mono"; s.metronome = nil end
-        if ImGui.Selectable(ctx, "Click (metronome)", s.metronome == true) then s.width = "mono"; s.metronome = true end
-        ImGui.EndCombo(ctx)
-      end
-      if ImGui.IsItemHovered(ctx) and s.metronome then
-        ImGui.SetTooltip(ctx, "Not a cue track: Foldback only keeps this output free so no cue is put on it.\nPoint REAPER's metronome output at it in REAPER's metronome settings.")
+      if s.metronome then
+        -- the metronome is not a cue, so stereo/mono does not apply: no type choice
+        ImGui.AlignTextToFramePadding(ctx)
+        ImGui.TextDisabled(ctx, "Metronome")
+        if ImGui.IsItemHovered(ctx) then
+          ImGui.SetTooltip(ctx, "Not a cue track: Foldback only keeps this output free so no cue is put on it.\nPoint REAPER's metronome output at it in REAPER's metronome settings.")
+        end
+      else
+        local kind = s.width == "stereo" and "Stereo" or "Mono"
+        ImGui.SetNextItemWidth(ctx, 132)
+        if ImGui.BeginCombo(ctx, "##type", kind) then
+          if ImGui.Selectable(ctx, "Stereo", kind == "Stereo") then s.width = "stereo" end
+          if not MIX and ImGui.Selectable(ctx, "Mono", kind == "Mono") then s.width = "mono" end
+          if not MIX and ImGui.Selectable(ctx, "Metronome", false) then s.width = "mono"; s.metronome = true end
+          ImGui.EndCombo(ctx)
+        end
       end
       ImGui.TableNextColumn(ctx)
       local v0 = s.output
@@ -297,6 +314,7 @@ local function tab_cues()
       ImGui.TableNextColumn(ctx)
       if ImGui.SmallButton(ctx, "Remove") then remove = i end
       ImGui.PopID(ctx)
+     end
     end
     ImGui.EndTable(ctx)
   end
@@ -337,7 +355,18 @@ local function tab_cues()
       ed.options.default_stems = "artist1 artist2 artist3 artist4"
       note("Cues replaced with Artist 1 to Artist 4. Choose each one's output above. Not saved yet: Revert brings the old list back.")
     end
-    help("Replaces the cue list with four mixes named Artist 1 to Artist 4 (the click entry, if any, is kept). You can rename, add and remove cues afterwards.")
+    help("Replaces the cue list with four mixes named Artist 1 to Artist 4 (the metronome entry, if any, is kept). You can rename, add and remove cues afterwards.")
+  else
+    ImGui.SameLine(ctx, 0, 24)
+    if ImGui.Button(ctx, "Replace cues with Drums, Guitars, Bass, Vocals") then
+      local keep = {}
+      for _, st in ipairs(ed.stems) do if st.metronome then keep[#keep + 1] = st end end
+      ed.stems = deepcopy(EXAMPLE_STEMS)
+      for _, st in ipairs(keep) do ed.stems[#ed.stems + 1] = st end
+      ed.options.default_stems = "drums guitars bass vocals"
+      note("Cues replaced with Drums, Guitars, Bass and Vocals. Choose each one's output above. Not saved yet: Revert brings the old list back.")
+    end
+    help("Replaces the cue list with four common stems: Drums and Guitars (stereo), Bass and Vocals (mono). The metronome entry, if any, is kept, and track-name rules are left as they are. You can rename, add and remove cues afterwards.")
   end
   ImGui.SameLine(ctx, 0, 24)
   if ImGui.Button(ctx, "Refresh output list") then refresh_outputs(); note("Output list refreshed (" .. #outs .. " outputs).") end
@@ -519,16 +548,19 @@ local function tab_options()
       if chd then o.mix_send_db = math.max(-60, math.min(12, db)) end
     end
     local pick = o.mix_new_tracks == "pick"
+    ImGui.AlignTextToFramePadding(ctx)
+    ImGui.Text(ctx, "New tracks get")
+    ImGui.SameLine(ctx)
     ImGui.SetNextItemWidth(ctx, 330)
-    if ImGui.BeginCombo(ctx, "New tracks get", pick and "No sends until I add them" or "A send to every mix") then
+    if ImGui.BeginCombo(ctx, "##newtracks", pick and "No sends until I add them" or "A send to every mix") then
       if ImGui.Selectable(ctx, "A send to every mix", not pick) then o.mix_new_tracks = "all" end
       if ImGui.Selectable(ctx, "No sends until I add them", pick) then o.mix_new_tracks = "pick" end
       ImGui.EndCombo(ctx)
     end
+    help("A send to every mix: each new track appears in every performer's mix, ready to raise (it starts at the level above). No sends until I add them: nothing is created; add sends yourself with + in the panel or in Set up this session. A send you delete on purpose is never put back.")
     local chk_, vc = ImGui.Checkbox(ctx, "Add a click track that feeds every mix", o.click_track == true)
     if chk_ then o.click_track = vc end
     help("\"Set up this session\" adds a track named Click that makes a click on every beat of the project's tempo and time signature (it follows tempo changes). It gets its own send to every mix, off at first, so each performer has their own click level and pan. It does NOT use REAPER's metronome settings (sound, volume, count-in, on/off); it only follows the tempo and time signature.")
-    help("A send to every mix: each new track appears in every performer's mix, ready to raise (it starts at the level above). No sends until I add them: nothing is created; add sends yourself with + in the panel or in Set up this session. A send you delete on purpose is never put back.")
   else
     ImGui.SetNextItemWidth(ctx, 120)
     local chd, db = ImGui.InputDouble(ctx, "Level of new cue sends (dB)", o.auto_send_db or 0, 0.5, 3, "%.1f")

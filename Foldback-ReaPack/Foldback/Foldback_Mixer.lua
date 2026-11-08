@@ -27,7 +27,7 @@ local ctx   -- created further down, AFTER the slow font lookup (ReaImGui discar
 local EXT = "FOLDBACK_MIXER"
 local LV_MIN, LV_MAX = -60.0, 12.0
 local COL_W = 118     -- cue column width (left section)
-local LABEL_W = 64    -- label column (left section)
+local LABEL_W = 80    -- label column (left section)
 local SEL_NAME_W = 150
 local SEL_W = 92      -- per-cue column width (selected-tracks section)
 local PAN_W = 46      -- per-send pan box (mix mode, selected-tracks section)
@@ -623,17 +623,58 @@ local function settings_popup()
   ImGui.EndPopup(ctx)
 end
 
+---------------------------------------------------------------- REAPER's metronome settings
+-- Opens REAPER's "Show metronome/pre-roll settings" window. The action's number is looked up by its
+-- name (once), so nothing here depends on remembering the number; if it can't be found, say how to open it by hand.
+local function open_metronome_settings()
+  if st.met_cmd == nil then
+    st.met_cmd = false
+    if r.APIExists("kbd_getTextFromCmd") and r.APIExists("SectionFromUniqueID") then
+      local sec = r.SectionFromUniqueID(0)
+      local fallback, fallback_txt
+      for id = 40000, 43000 do
+        local ok, txt = pcall(r.kbd_getTextFromCmd, id, sec)
+        if ok and type(txt) == "string" then
+          local l = txt:lower()
+          if l:find("metronome", 1, true) and l:find("settings", 1, true) then
+            if l:find("show", 1, true) and not l:find("toggle", 1, true) then st.met_cmd, st.met_txt = id, txt; break end
+            if not fallback and not l:find("toggle", 1, true) then fallback, fallback_txt = id, txt end
+          end
+        end
+      end
+      if not st.met_cmd and fallback then st.met_cmd, st.met_txt = fallback, fallback_txt end
+    end
+    append_auto_log("metronome settings action: " .. tostring(st.met_cmd) .. " " .. tostring(st.met_txt))
+  end
+  if st.met_cmd then
+    -- open it a moment AFTER the click: opened in the same instant, the window opened and was closed again
+    -- by the mouse-release that finished the click
+    local cmd, t0 = st.met_cmd, r.time_precise()
+    local function go()
+      if r.time_precise() - t0 < 0.25 then r.defer(go) else r.Main_OnCommand(cmd, 0) end
+    end
+    r.defer(go)
+  else
+    r.ShowMessageBox("Foldback couldn't find REAPER's metronome settings action.\n\nOpen them by right-clicking the metronome button on REAPER's toolbar.", "Foldback", 0)
+  end
+end
+
 ---------------------------------------------------------------- left: the cues
 local function cues_section()
   local n = #st.stems
   local listening = C.listen_state(st.cues, st.listen)
-  local w = LABEL_W + n * COL_W + (n + 1) * 10
+  -- stems mode: a Click (metronome) entry is not a cue, but it is shown at the end so you can see which output
+  -- REAPER's metronome is meant to use (and open REAPER's metronome settings)
+  local met = {}
+  if not IS_MIX() then for _, m in ipairs(cfg.stems) do if m.metronome then met[#met + 1] = m end end end
+  local w = LABEL_W + (n + #met) * COL_W + (n + #met + 1) * 10
   local flags = ImGui.TableFlags_SizingFixedFit | ImGui.TableFlags_BordersInnerV
-  if not ImGui.BeginTable(ctx, "cues", n + 1, flags, w, 0) then return end
+  if not ImGui.BeginTable(ctx, "cues", n + #met + 1, flags, w, 0) then return end
   ImGui.TableSetupColumn(ctx, "##labels", ImGui.TableColumnFlags_WidthFixed, LABEL_W)
   for _, s in ipairs(st.stems) do ImGui.TableSetupColumn(ctx, s.id, ImGui.TableColumnFlags_WidthFixed, COL_W) end
+  for _, m in ipairs(met) do ImGui.TableSetupColumn(ctx, "met_" .. m.id, ImGui.TableColumnFlags_WidthFixed, COL_W) end
 
-  local function row(label, fn, tip)
+  local function row(label, fn, tip, fn_met)
     ImGui.TableNextRow(ctx, 0, ImGui.GetFrameHeight(ctx))   -- every row exactly one control tall
     ImGui.TableNextColumn(ctx)
     ImGui.AlignTextToFramePadding(ctx)
@@ -643,6 +684,12 @@ local function cues_section()
       ImGui.TableNextColumn(ctx)
       ImGui.PushID(ctx, s.id)
       fn(s, st.cues[s.id])
+      ImGui.PopID(ctx)
+    end
+    for _, m in ipairs(met) do
+      ImGui.TableNextColumn(ctx)
+      ImGui.PushID(ctx, "met_" .. m.id)
+      if fn_met then fn_met(m) end
       ImGui.PopID(ctx)
     end
   end
@@ -657,6 +704,10 @@ local function cues_section()
     if ImGui.Button(ctx, s.name .. "##name", COL_W, 0) then st.detail = s.id; st.open_detail = true end
     ImGui.PopStyleColor(ctx, 3)
     if ImGui.IsItemHovered(ctx) then ImGui.SetTooltip(ctx, (C.feature(cfg, "cue_reverb") and "Every track feeding this cue, and reverb on/off" or "Every track feeding this cue") .. (IS_MIX() and ". Also: Start from my mix" or "")) end
+  end, nil, function(m)
+    local mlabel = (m.name and m.name:match("%S")) and m.name or "Metronome"   -- the row's name; "Metronome" unless the user renamed it
+    if ImGui.Button(ctx, mlabel .. "##metname", COL_W, 0) then open_metronome_settings() end
+    if ImGui.IsItemHovered(ctx) then ImGui.SetTooltip(ctx, "Click for metronome settings") end
   end)
   row(cfg.device_label or "Output", function(s)
     ImGui.TextDisabled(ctx, C.output_label(s))
@@ -689,21 +740,23 @@ local function cues_section()
     if down then
       ImGui.PushStyleColor(ctx, ImGui.Col_Button, LOOK.listen_on)
       ImGui.PushStyleColor(ctx, ImGui.Col_ButtonHovered, LOOK.listen_on)
+      ImGui.PushStyleColor(ctx, ImGui.Col_ButtonActive, LOOK.listen_on)   -- the colour while the mouse is held down
       ImGui.PushStyleColor(ctx, ImGui.Col_Text, 0xFFFFFFFF)
     end
-    ImGui.Button(ctx, (down and "TALKING" or "Hold to talk") .. "##talk", LABEL_W, 0)
+    ImGui.Button(ctx, "Talkback###talk", LABEL_W, 0)   -- "###": the ID must not change with the label, or REAPER drops the hold the moment the label changes
     local held = ImGui.IsItemActive(ctx)
-    if down then ImGui.PopStyleColor(ctx, 3) end
+    if down then ImGui.PopStyleColor(ctx, 4) end
     if held ~= (st.talk or false) then
       if held then
         if not C.find_tagged(C.KEY_TALK) then C.ensure_talkback(cfg, st.cues); st.cc = -1 end
+        C.talkback_sync_input(cfg)
         C.talkback_set(true)
       else
         C.talkback_set(false)
       end
       st.talk = held
     end
-    if ImGui.IsItemHovered(ctx) then ImGui.SetTooltip(ctx, "Hold the mouse button down to talk into every cue. Let go and the cues close again.") end
+    if ImGui.IsItemHovered(ctx) then ImGui.SetTooltip(ctx, "Hold the mouse button down to talk into every cue. Let go and the cues close again." .. (C.input_index((cfg.options or {}).talkback_input) and "" or "\n\nNo microphone input is chosen yet (or it was not found): pick one in Settings > Options > Talkback.")) end
   end
   row(listen_label, function(s)
     local on = listening[s.id]

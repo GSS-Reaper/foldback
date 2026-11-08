@@ -596,6 +596,24 @@ function C.ensure_talkback(cfg, cues)
   return tr, inp ~= nil
 end
 
+-- Make an existing TALKBACK track listen to the microphone input chosen in Settings. (The input
+-- used to be applied only when "Set up this session" ran, so choosing it afterwards did nothing.)
+-- Returns true if an input is chosen and found.
+function C.talkback_sync_input(cfg)
+  local tr = C.find_tagged(C.KEY_TALK)
+  if not tr then return false end
+  local inp = C.input_index(((cfg or C.cfg or {}).options or {}).talkback_input)
+  if not inp then return false end
+  local function set_if(key, v)
+    if r.GetMediaTrackInfo_Value(tr, key) ~= v then r.SetMediaTrackInfo_Value(tr, key, v) end
+  end
+  set_if("I_RECINPUT", inp)
+  set_if("I_RECMODE", 2)      -- monitor only: never records
+  set_if("I_RECMON", 1)
+  set_if("I_RECARM", 1)
+  return true
+end
+
 -- open (true) or close (false) the talkback sends
 function C.talkback_set(on)
   local tr = C.find_tagged(C.KEY_TALK)

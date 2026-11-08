@@ -62,7 +62,7 @@ end
 local function conflicts(want)
   local used = {}
   for _, s in ipairs(cfg.stems) do
-    if s.metronome or want[s.id] then
+    if (s.metronome and not MIX) or want[s.id] then
       for o in pairs(C.stem_out_set(s)) do
         if used[o] then return "REAPER output " .. (o + 1) .. " is used by both " .. used[o] .. " and " .. s.name end
         used[o] = s.name
@@ -251,10 +251,10 @@ local function apply(want, grid)
   end
 
   for _, s in ipairs(cfg.stems) do
-    if s.metronome then
+    if s.metronome and not MIX then
       local o = C.output_index(s.output)
       log.w("")
-      log.w(string.format("%s: set REAPER's metronome output to %s (REAPER output %s).", s.name, tostring(s.output), o and (o + 1) or "?"))
+      log.w(string.format("%s: output %s (REAPER output %s) is kept free for REAPER's metronome. Foldback does not change the metronome: point it there yourself in REAPER's metronome settings.", s.name, tostring(s.output), o and (o + 1) or "?"))
     end
   end
 
