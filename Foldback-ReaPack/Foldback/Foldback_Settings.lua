@@ -571,7 +571,7 @@ local function tab_options()
   ImGui.SeparatorText(ctx, "Talkback")
   local cht, vt = ImGui.Checkbox(ctx, "Add a talkback button", o.talkback == true)
   if cht then o.talkback = vt end
-  help("Adds a TALKBACK track with a send to every cue, and a \"Hold to talk\" button in the panel (left of the Listen row). The sends are only open while you hold the button down. Choose the microphone input below, then run \"Set up this session\" (or just press the button once).")
+  help("Adds a TALKBACK track with a send to every cue, and a Talkback button in the panel (left of the Listen row). The sends are only open while you hold the button down. Choose the microphone input below, then run \"Set up this session\" (or just press the button once).")
   if o.talkback == true then
     local ni = C.input_index(o.talkback_input)
     local nin = r.GetNumAudioInputs()
@@ -670,8 +670,8 @@ local function do_name_action()
   local to = C.profile_file(nm)
   if r.file_exists(to) then note("There's already a profile called \"" .. nm .. "\".", true) return false end
   if S.name_mode == "new" then
-    if not C.copy_file(C.script_dir .. "profiles/Starter.lua", to) and not C.copy_file(C.profile_file("Starter"), to) then
-      note("Couldn't find the Starter profile to copy.", true) return false
+    if not C.copy_file(C.script_dir .. "profiles/Starter Mixes.lua", to) and not C.copy_file(C.profile_file("Starter Mixes"), to) then
+      note("Couldn't find the Starter Mixes profile to copy.", true) return false
     end
     switch_to(nm)
     S.ed.profile_name = nm
@@ -716,7 +716,7 @@ local function profile_bar()
   help("A profile holds all of a studio's (or setup's) Foldback settings. The one chosen here is the one Foldback uses.")
   ImGui.SameLine(ctx, 0, 16)
   if ImGui.Button(ctx, "New") then guarded(function() S.name_mode = "new"; S.name_buf = ""; S.modal = "name" end) end
-  if ImGui.IsItemHovered(ctx) then ImGui.SetTooltip(ctx, "Start a new profile from the neutral Starter settings") end
+  if ImGui.IsItemHovered(ctx) then ImGui.SetTooltip(ctx, "Start a new profile from the neutral Starter Mixes settings") end
   ImGui.SameLine(ctx)
   if ImGui.Button(ctx, "Duplicate") then S.name_mode = "duplicate"; S.name_buf = S.ed.profile .. " copy"; S.modal = "name" end
   if ImGui.IsItemHovered(ctx) then ImGui.SetTooltip(ctx, "Copy this profile (including unsaved changes) under a new name") end
@@ -763,7 +763,7 @@ local function modals()
       os.remove(path)
       local rest = C.list_profiles()
       local nextp = rest[1]
-      for _, n in ipairs(rest) do if n == "Starter" then nextp = n end end
+      for _, n in ipairs(rest) do if n == "Starter Mixes" then nextp = n end end
       if nextp then switch_to(nextp) end
       note("Deleted \"" .. gone .. "\".")
       S.modal, S.modal_open = nil, false

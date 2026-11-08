@@ -4,7 +4,7 @@
 local r = reaper
 local C = {}
 
-C.VERSION = "0.5.0-mix"
+C.VERSION = "0.6.3"
 C.res = r.GetResourcePath()
 C.dir = C.res .. "/Foldback"
 C.logdir = C.dir .. "/logs"
@@ -177,10 +177,10 @@ function C.ensure_effects()
   end
 end
 
--- First run: copy the shipped Starter profile into the user's profiles folder.
+-- First run: copy the shipped Starter Mixes and Starter Stems profiles into the user's profiles folder.
 function C.ensure_starter()
   r.RecursiveCreateDirectory(C.profdir, 0)
-  for _, n in ipairs({ "Starter", "Starter Stems" }) do
+  for _, n in ipairs({ "Starter Mixes", "Starter Stems" }) do
     local to = C.profdir .. "/" .. n .. ".lua"
     if not r.file_exists(to) then
       local d = read_file(C.script_dir .. "profiles/" .. n .. ".lua")
@@ -190,7 +190,7 @@ function C.ensure_starter()
 end
 
 -- Which file to load: the active profile; else the older single Foldback_Config.lua;
--- else the Starter profile.
+-- else the Starter Mixes profile.
 function C.config_path()
   local name = C.active_profile_name()
   if name and r.file_exists(C.profdir .. "/" .. name .. ".lua") then
@@ -199,7 +199,7 @@ function C.config_path()
   if r.file_exists(C.dir .. "/Foldback_Config.lua") then
     return C.dir .. "/Foldback_Config.lua", "Foldback_Config (older single config)"
   end
-  return C.profdir .. "/Starter.lua", "Starter"
+  return C.profdir .. "/Starter Mixes.lua", "Starter Mixes"
 end
 
 function C.load_config()
