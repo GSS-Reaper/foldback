@@ -1,4 +1,4 @@
--- Foldback - Copyright (C) 2026 Franktree. Free software under the GNU General Public License v3.0 (see LICENSE).
+-- Foldback - Copyright (C) 2026 Greater Society Studios. Free software under the GNU General Public License v3.0 (see LICENSE).
 -- Foldback - shared functions
 -- Not an action. Loaded by the other Foldback scripts with dofile().
 local r = reaper

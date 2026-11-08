@@ -1,4 +1,4 @@
--- Foldback - Copyright (C) 2026 Franktree. Free software under the GNU General Public License v3.0 (see LICENSE).
+-- Foldback - Copyright (C) 2026 Greater Society Studios. Free software under the GNU General Public License v3.0 (see LICENSE).
 -- @description Foldback: cue mixer panel (with automatic cue sends for new tracks)
 -- Left:  one column per cue - name (click = everything feeding it), output,
 --        cue level + meter, reverb (if the profile uses it), Listen.

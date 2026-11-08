@@ -1,5 +1,5 @@
 desc:Foldback limiter (protects headphones)
-// Foldback - Copyright (C) 2026 Franktree. Free software under the GNU General Public License v3.0 (see LICENSE).
+// Foldback - Copyright (C) 2026 Greater Society Studios. Free software under the GNU General Public License v3.0 (see LICENSE).
 //tags: dynamics utility Foldback
 slider1:-3<-24,0,0.1>Ceiling (dB)
 in_pin:left input

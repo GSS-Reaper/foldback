@@ -1,4 +1,4 @@
--- Foldback - Copyright (C) 2026 Franktree. Free software under the GNU General Public License v3.0 (see LICENSE).
+-- Foldback - Copyright (C) 2026 Greater Society Studios. Free software under the GNU General Public License v3.0 (see LICENSE).
 -- @description Foldback: settings (cues and their outputs, Listen, options, colors)
 -- Edits the ACTIVE profile (Foldback/profiles/<name>.lua) through menus, so nobody has to
 -- edit the file by hand. Nothing is written until you press Save.

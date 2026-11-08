@@ -1,5 +1,5 @@
 desc:Foldback click (follows the project tempo and time signature)
-// Foldback - Copyright (C) 2026 Franktree. Free software under the GNU General Public License v3.0 (see LICENSE).
+// Foldback - Copyright (C) 2026 Greater Society Studios. Free software under the GNU General Public License v3.0 (see LICENSE).
 //tags: generator Foldback
 slider1:-12<-48,0,0.5>Click level (dB)
 slider2:1<0,1,1{No,Yes}>Higher click on the first beat of each bar

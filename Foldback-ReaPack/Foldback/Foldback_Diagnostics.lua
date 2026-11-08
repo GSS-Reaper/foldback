@@ -1,4 +1,4 @@
--- Foldback - Copyright (C) 2026 Franktree. Free software under the GNU General Public License v3.0 (see LICENSE).
+-- Foldback - Copyright (C) 2026 Greater Society Studios. Free software under the GNU General Public License v3.0 (see LICENSE).
 -- Foldback System - Diagnostics (READ-ONLY)
 -- Writes a report to <resource path>/Foldback/logs/diagnostics.txt
 -- Changes nothing in the project or in REAPER's settings.

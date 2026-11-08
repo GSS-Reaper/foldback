@@ -20,6 +20,21 @@
         <source file="effects/Foldback_Limiter.txt">https://github.com/GSS-Reaper/foldback/raw/v0.6.1/Foldback-ReaPack/Foldback/effects/Foldback_Limiter.txt</source>
         <source file="effects/Foldback_Click.txt">https://github.com/GSS-Reaper/foldback/raw/v0.6.1/Foldback-ReaPack/Foldback/effects/Foldback_Click.txt</source>
       </version>
+      <version name="0.6.2" author="GSS-Reaper" time="2026-11-08T17:10:18Z">
+        <changelog>Copyright notice now names Greater Society Studios. No functional changes.</changelog>
+        <source file="Foldback_Mixer.lua" main="main">https://github.com/GSS-Reaper/foldback/raw/v0.6.2/Foldback-ReaPack/Foldback/Foldback_Mixer.lua</source>
+        <source file="Foldback_Setup.lua" main="main">https://github.com/GSS-Reaper/foldback/raw/v0.6.2/Foldback-ReaPack/Foldback/Foldback_Setup.lua</source>
+        <source file="Foldback_Settings.lua" main="main">https://github.com/GSS-Reaper/foldback/raw/v0.6.2/Foldback-ReaPack/Foldback/Foldback_Settings.lua</source>
+        <source file="Foldback_Core.lua">https://github.com/GSS-Reaper/foldback/raw/v0.6.2/Foldback-ReaPack/Foldback/Foldback_Core.lua</source>
+        <source file="Foldback_MixTest.lua">https://github.com/GSS-Reaper/foldback/raw/v0.6.2/Foldback-ReaPack/Foldback/Foldback_MixTest.lua</source>
+        <source file="Foldback_Diagnostics.lua">https://github.com/GSS-Reaper/foldback/raw/v0.6.2/Foldback-ReaPack/Foldback/Foldback_Diagnostics.lua</source>
+        <source file="profiles/Starter.lua">https://github.com/GSS-Reaper/foldback/raw/v0.6.2/Foldback-ReaPack/Foldback/profiles/Starter.lua</source>
+        <source file="profiles/Starter Stems.lua">https://github.com/GSS-Reaper/foldback/raw/v0.6.2/Foldback-ReaPack/Foldback/profiles/Starter%20Stems.lua</source>
+        <source file="effects/Foldback_MonoSum.txt">https://github.com/GSS-Reaper/foldback/raw/v0.6.2/Foldback-ReaPack/Foldback/effects/Foldback_MonoSum.txt</source>
+        <source file="effects/Foldback_TestTone.txt">https://github.com/GSS-Reaper/foldback/raw/v0.6.2/Foldback-ReaPack/Foldback/effects/Foldback_TestTone.txt</source>
+        <source file="effects/Foldback_Limiter.txt">https://github.com/GSS-Reaper/foldback/raw/v0.6.2/Foldback-ReaPack/Foldback/effects/Foldback_Limiter.txt</source>
+        <source file="effects/Foldback_Click.txt">https://github.com/GSS-Reaper/foldback/raw/v0.6.2/Foldback-ReaPack/Foldback/effects/Foldback_Click.txt</source>
+      </version>
     </reapack>
   </category>
 </index>

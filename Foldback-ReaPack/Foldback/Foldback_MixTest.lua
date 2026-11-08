@@ -1,4 +1,4 @@
--- Foldback - Copyright (C) 2026 Franktree. Free software under the GNU General Public License v3.0 (see LICENSE).
+-- Foldback - Copyright (C) 2026 Greater Society Studios. Free software under the GNU General Public License v3.0 (see LICENSE).
 -- @description Foldback: mix mode automated test
 -- Builds temporary tracks (a -18 dBFS 440 Hz tone, one stereo test mix with NO hardware output,
 -- and one spare track), then checks mix mode: new sends start off, a send you removed isn't put

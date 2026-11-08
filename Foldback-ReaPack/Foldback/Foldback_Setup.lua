@@ -1,4 +1,4 @@
--- Foldback - Copyright (C) 2026 Franktree. Free software under the GNU General Public License v3.0 (see LICENSE).
+-- Foldback - Copyright (C) 2026 Greater Society Studios. Free software under the GNU General Public License v3.0 (see LICENSE).
 -- @description Foldback: set up this session (choose the cues, then which tracks feed them)
 -- Creates / repairs / removes CUE tracks for the cues you tick, the CUE LISTEN track, and the
 -- sends from your tracks into the cues (as ticked in the grid). Writes Foldback/logs/setup.txt

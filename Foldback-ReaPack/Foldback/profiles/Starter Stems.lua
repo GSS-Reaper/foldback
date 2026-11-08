@@ -1,4 +1,4 @@
--- Foldback - Copyright (C) 2026 Franktree. Free software under the GNU General Public License v3.0 (see LICENSE).
+-- Foldback - Copyright (C) 2026 Greater Society Studios. Free software under the GNU General Public License v3.0 (see LICENSE).
 -- Foldback profile: Starter Stems
 -- A starting point for sending groups of instruments (stems) to musicians who blend their own mix. Foldback copies it into <REAPER resource folder>/Foldback/profiles
 -- the first time it runs. Change it in Foldback Settings (panel > Settings > Foldback settings...).
