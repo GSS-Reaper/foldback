@@ -1,0 +1,34 @@
+desc:Foldback limiter (protects headphones)
+// Foldback - Copyright (C) 2026 Franktree. Free software under the GNU General Public License v3.0 (see LICENSE).
+//tags: dynamics utility Foldback
+slider1:-3<-24,0,0.1>Ceiling (dB)
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+
+// A short-lookahead peak limiter. Nothing leaving this effect goes above the ceiling.
+// (It adds about 1 ms of delay, which doesn't matter for a headphone mix.)
+
+@init
+la = max(1, floor(srate * 0.001));          // lookahead, in samples
+att = 1 - exp(-3 / la);                      // how fast gain comes down on a loud peak
+rel = 1 - exp(-1 / (srate * 0.08));          // how fast it comes back up (about 80 ms)
+buf = 0; N = 512; pos = 0; g = 1;
+memset(buf, 0, N * 2);
+
+@slider
+cl = 10 ^ (slider1 / 20);
+
+@sample
+buf[pos * 2]     = spl0;
+buf[pos * 2 + 1] = spl1;
+pk = max(abs(spl0), abs(spl1));
+need = pk > cl ? cl / pk : 1;
+need < g ? g += (need - g) * att : g += (1 - g) * rel;
+rp = pos - la; rp < 0 ? rp += N;
+o0 = buf[rp * 2]     * g;
+o1 = buf[rp * 2 + 1] * g;
+spl0 = max(-cl, min(cl, o0));                // safety: never above the ceiling
+spl1 = max(-cl, min(cl, o1));
+pos += 1; pos >= N ? pos = 0;

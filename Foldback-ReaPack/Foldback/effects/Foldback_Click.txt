@@ -1,0 +1,53 @@
+desc:Foldback click (follows the project tempo and time signature)
+// Foldback - Copyright (C) 2026 Franktree. Free software under the GNU General Public License v3.0 (see LICENSE).
+//tags: generator Foldback
+slider1:-12<-48,0,0.5>Click level (dB)
+slider2:1<0,1,1{No,Yes}>Higher click on the first beat of each bar
+out_pin:left output
+out_pin:right output
+
+// Makes a short click on every beat of the project's time signature while Reaper plays.
+// It follows tempo changes. It can't read REAPER's own metronome settings (its sound, volume,
+// count-in or on/off), so those don't affect this click.
+
+@init
+decay = exp(-1 / (srate * 0.012));
+tpi = 2 * $pi;
+ph = 0; env = 0; fr = 1000;
+lastidx = -1000000000; reset = 1; was = 0; expbp = -1000000000;
+
+@slider
+vol = 10 ^ (slider1 / 20);
+
+@block
+unit = 4 / max(1, ts_denom);                       // length of one click, in quarter notes
+bps = tempo / 60;                                  // quarter notes per second
+dbp = bps / srate;                                 // quarter notes per sample
+playing = play_state & 1;
+playing && !was ? reset = 1;                       // playback just started
+was = playing;
+abs(beat_position - expbp) > 0.05 ? reset = 1;     // the playhead jumped (or looped)
+bp = beat_position;
+expbp = beat_position + samplesblock * dbp;
+
+@sample
+s = 0;
+playing ? (
+  reset ? ( lastidx = ceil(bp / unit - 0.0000001) - 1; reset = 0; );
+  idx = floor(bp / unit + 0.0000001);
+  idx > lastidx ? (
+    lastidx = idx;
+    nb = max(1, ts_num);
+    first = (idx - nb * floor(idx / nb)) == 0;
+    fr = (slider2 && first) ? 1500 : 1000;
+    env = 1; ph = 0;
+  );
+  bp += dbp;
+);
+env > 0.0005 ? (
+  s = sin(ph) * env * vol;
+  ph += tpi * fr / srate;
+  env *= decay;
+);
+spl0 = s;
+spl1 = s;

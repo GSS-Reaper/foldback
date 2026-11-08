@@ -1,0 +1,11 @@
+desc:Foldback mono sum (L+R to both channels, x0.5 so dual-mono stays at unity)
+// Foldback - Copyright (C) 2026 Franktree. Free software under the GNU General Public License v3.0 (see LICENSE).
+//tags: utility Foldback
+in_pin:left input
+in_pin:right input
+out_pin:left output
+out_pin:right output
+@sample
+m = (spl0 + spl1) * 0.5;
+spl0 = m;
+spl1 = m;

@@ -1,0 +1,14 @@
+desc:Foldback test tone (440 Hz sine, -18 dBFS peak)
+// Foldback - Copyright (C) 2026 Franktree. Free software under the GNU General Public License v3.0 (see LICENSE).
+//tags: utility Foldback
+out_pin:left output
+out_pin:right output
+@init
+ph = 0;
+amp = 10 ^ (-18 / 20);
+@sample
+s = sin(ph) * amp;
+ph += 2 * $pi * 440 / srate;
+ph > 2 * $pi ? ph -= 2 * $pi;
+spl0 = s;
+spl1 = s;

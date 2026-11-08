@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='utf-8'?>
+<index version="1" name="Foldback">
+  <category name="Foldback">
+    <reapack name="Foldback.lua" type="script" desc="Foldback - headphone (cue) mixes for REAPER">
+      <metadata>
+        <description>Per-performer headphone mixes in REAPER. A small panel lets you set each performer's level and pan for every track, preview a mix on your speakers (Listen), talk to the performers (talkback), and protect their ears with a limiter. Needs the ReaImGui extension.</description>
+      </metadata>
+      <version name="0.6.0" author="Franktree" time="2026-11-08T16:21:50Z">
+        <changelog>First public version: per-performer headphone mixes, Listen, click, talkback, limiter.</changelog>
+        <source file="Foldback_Mixer.lua" main="main">https://github.com/Franktree/foldback/raw/v0.6.0/Foldback/Foldback_Mixer.lua</source>
+        <source file="Foldback_Setup.lua" main="main">https://github.com/Franktree/foldback/raw/v0.6.0/Foldback/Foldback_Setup.lua</source>
+        <source file="Foldback_Settings.lua" main="main">https://github.com/Franktree/foldback/raw/v0.6.0/Foldback/Foldback_Settings.lua</source>
+        <source file="Foldback_Core.lua">https://github.com/Franktree/foldback/raw/v0.6.0/Foldback/Foldback_Core.lua</source>
+        <source file="Foldback_MixTest.lua">https://github.com/Franktree/foldback/raw/v0.6.0/Foldback/Foldback_MixTest.lua</source>
+        <source file="Foldback_Diagnostics.lua">https://github.com/Franktree/foldback/raw/v0.6.0/Foldback/Foldback_Diagnostics.lua</source>
+        <source file="profiles/Starter.lua">https://github.com/Franktree/foldback/raw/v0.6.0/Foldback/profiles/Starter.lua</source>
+        <source file="profiles/Starter Stems.lua">https://github.com/Franktree/foldback/raw/v0.6.0/Foldback/profiles/Starter%20Stems.lua</source>
+        <source file="effects/Foldback_MonoSum.txt">https://github.com/Franktree/foldback/raw/v0.6.0/Foldback/effects/Foldback_MonoSum.txt</source>
+        <source file="effects/Foldback_TestTone.txt">https://github.com/Franktree/foldback/raw/v0.6.0/Foldback/effects/Foldback_TestTone.txt</source>
+        <source file="effects/Foldback_Limiter.txt">https://github.com/Franktree/foldback/raw/v0.6.0/Foldback/effects/Foldback_Limiter.txt</source>
+        <source file="effects/Foldback_Click.txt">https://github.com/Franktree/foldback/raw/v0.6.0/Foldback/effects/Foldback_Click.txt</source>
+      </version>
+    </reapack>
+  </category>
+</index>
