@@ -1,0 +1,4 @@
+CLAUDE.local.md
+*.bak
+.DS_Store
+.claude/worktrees/
