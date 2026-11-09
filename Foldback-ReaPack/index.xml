@@ -50,6 +50,21 @@
         <source file="effects/Foldback_Limiter.txt">https://github.com/GSS-Reaper/foldback/raw/v0.6.3/Foldback-ReaPack/Foldback/effects/Foldback_Limiter.txt</source>
         <source file="effects/Foldback_Click.txt">https://github.com/GSS-Reaper/foldback/raw/v0.6.3/Foldback-ReaPack/Foldback/effects/Foldback_Click.txt</source>
       </version>
+      <version name="0.6.5" author="GSS-Reaper" time="2026-11-09T15:54:01Z">
+        <changelog>New: Settings &gt; "Remove Foldback from this project..." (asks first) deletes the cue sends and every track Foldback made in this project (cue tracks, CUE LISTEN, TALKBACK, Click), for when tracking is done and you move on to mixing. Your own tracks and sends are left alone, it is one undo step, and Foldback stays off in that project until you set it up again.</changelog>
+        <source file="Foldback_Mixer.lua" main="main">https://github.com/GSS-Reaper/foldback/raw/v0.6.5/Foldback-ReaPack/Foldback/Foldback_Mixer.lua</source>
+        <source file="Foldback_Setup.lua" main="main">https://github.com/GSS-Reaper/foldback/raw/v0.6.5/Foldback-ReaPack/Foldback/Foldback_Setup.lua</source>
+        <source file="Foldback_Settings.lua" main="main">https://github.com/GSS-Reaper/foldback/raw/v0.6.5/Foldback-ReaPack/Foldback/Foldback_Settings.lua</source>
+        <source file="Foldback_Core.lua">https://github.com/GSS-Reaper/foldback/raw/v0.6.5/Foldback-ReaPack/Foldback/Foldback_Core.lua</source>
+        <source file="Foldback_MixTest.lua">https://github.com/GSS-Reaper/foldback/raw/v0.6.5/Foldback-ReaPack/Foldback/Foldback_MixTest.lua</source>
+        <source file="Foldback_Diagnostics.lua">https://github.com/GSS-Reaper/foldback/raw/v0.6.5/Foldback-ReaPack/Foldback/Foldback_Diagnostics.lua</source>
+        <source file="profiles/Starter Mixes.lua">https://github.com/GSS-Reaper/foldback/raw/v0.6.5/Foldback-ReaPack/Foldback/profiles/Starter%20Mixes.lua</source>
+        <source file="profiles/Starter Stems.lua">https://github.com/GSS-Reaper/foldback/raw/v0.6.5/Foldback-ReaPack/Foldback/profiles/Starter%20Stems.lua</source>
+        <source file="effects/Foldback_MonoSum.txt">https://github.com/GSS-Reaper/foldback/raw/v0.6.5/Foldback-ReaPack/Foldback/effects/Foldback_MonoSum.txt</source>
+        <source file="effects/Foldback_TestTone.txt">https://github.com/GSS-Reaper/foldback/raw/v0.6.5/Foldback-ReaPack/Foldback/effects/Foldback_TestTone.txt</source>
+        <source file="effects/Foldback_Limiter.txt">https://github.com/GSS-Reaper/foldback/raw/v0.6.5/Foldback-ReaPack/Foldback/effects/Foldback_Limiter.txt</source>
+        <source file="effects/Foldback_Click.txt">https://github.com/GSS-Reaper/foldback/raw/v0.6.5/Foldback-ReaPack/Foldback/effects/Foldback_Click.txt</source>
+      </version>
     </reapack>
   </category>
 </index>

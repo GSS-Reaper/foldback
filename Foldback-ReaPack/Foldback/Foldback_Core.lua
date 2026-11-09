@@ -4,7 +4,7 @@
 local r = reaper
 local C = {}
 
-C.VERSION = "0.6.3"
+C.VERSION = "0.6.5"
 C.res = r.GetResourcePath()
 C.dir = C.res .. "/Foldback"
 C.logdir = C.dir .. "/logs"
@@ -1012,6 +1012,141 @@ function C.ensure_listen(cfg, cues)
   r.PreventUIRefresh(-1)
   r.TrackList_AdjustWindows(false)
   return listen
+end
+
+---------------------------------------------------------------- remove Foldback from a project
+-- For when tracking is done and you move on to mixing: takes out every track Foldback made
+-- (CUE tracks with their reverb/limiter, CUE LISTEN, TALKBACK, the Click track, old CUE VERB
+-- and test tracks), every send into those tracks, and Foldback's hidden notes on your own
+-- tracks. Your own tracks, their other sends, faders, pans, FX and names are not touched,
+-- and REAPER's metronome is left alone.
+
+-- true if this track is one Foldback made (and removing Foldback deletes it)
+function C.is_foldback_track(tr)
+  return C.is_system(tr) or C.get_ext(tr, C.KEY_CLICK) ~= nil
+end
+
+-- What removing would do in this project, without changing anything.
+-- returns { tracks = {track...}, names = {name...}, sends = n, cues = n, tagged = n }
+function C.removal_plan()
+  local p = { tracks = {}, names = {}, sends = 0, cues = 0, tagged = 0 }
+  local gone = {}
+  for i = 0, r.CountTracks(0) - 1 do
+    local tr = r.GetTrack(0, i)
+    if C.is_foldback_track(tr) then
+      p.tracks[#p.tracks + 1] = tr
+      p.names[#p.names + 1] = C.name(tr)
+      gone[C.guid(tr)] = true
+      if C.get_ext(tr, C.KEY_STEM) then p.cues = p.cues + 1 end
+    end
+  end
+  for i = 0, r.CountTracks(0) - 1 do
+    local tr = r.GetTrack(0, i)
+    if not C.is_foldback_track(tr) then
+      for k = 0, r.GetTrackNumSends(tr, 0) - 1 do
+        local d = r.GetTrackSendInfo_Value(tr, 0, k, "P_DESTTRACK")
+        if d and r.ValidatePtr2(0, d, "MediaTrack*") and gone[C.guid(d)] then p.sends = p.sends + 1 end
+      end
+      if C.get_ext(tr, C.KEY_SEEN) or C.get_ext(tr, C.KEY_NAME) or C.get_ext(tr, C.KEY_AUTO) then
+        p.tagged = p.tagged + 1
+      end
+    end
+  end
+  return p
+end
+
+-- true if Foldback was removed from this project (the panel then stays out of the way
+-- until you set the project up again)
+function C.project_removed()
+  local ok, v = r.GetProjExtState(0, "FOLDBACK", "removed")
+  return ok == 1 and v == "1"
+end
+
+function C.set_project_removed(on)
+  r.SetProjExtState(0, "FOLDBACK", "removed", on and "1" or "")
+end
+
+-- Remove everything Foldback made from the current project, as ONE undo step.
+-- returns a short summary, e.g. "removed 9 tracks and 48 cue sends"
+function C.remove_from_project()
+  C.undo_flush(true)
+  local plan = C.removal_plan()
+  r.Undo_BeginBlock2(0)
+  r.PreventUIRefresh(1)
+  -- the undo block and screen refresh are always closed, even if something goes wrong
+  local ok, res = pcall(C.remove_work, plan)
+  r.PreventUIRefresh(-1)
+  r.TrackList_AdjustWindows(false)
+  r.UpdateArrange()
+  r.Undo_EndBlock2(0, "Foldback: remove from this project", -1)
+  if not ok then error(res, 0) end
+  return res
+end
+
+function C.remove_work(plan)
+  C.mark_busy()
+  -- Listen and talkback off first, so the master's mute goes back to how you had it
+  pcall(C.talkback_set, false)
+  local cues, listen = C.scan()
+  if listen and next(C.listen_state(cues, listen)) then C.listen_apply(cues, listen, {}) end
+  r.SetProjExtState(0, "FOLDBACK", "master_mute_before", "")
+
+  local gone = {}
+  for _, tr in ipairs(plan.tracks) do gone[C.guid(tr)] = true end
+  -- sends from your tracks into Foldback's tracks (removed by hand, so nothing is left dangling)
+  local sends = 0
+  for i = 0, r.CountTracks(0) - 1 do
+    local tr = r.GetTrack(0, i)
+    if not gone[C.guid(tr)] then
+      for k = r.GetTrackNumSends(tr, 0) - 1, 0, -1 do
+        local d = r.GetTrackSendInfo_Value(tr, 0, k, "P_DESTTRACK")
+        if d and r.ValidatePtr2(0, d, "MediaTrack*") and gone[C.guid(d)] then
+          if r.RemoveTrackSend(tr, 0, k) then sends = sends + 1 end
+        end
+      end
+      for _, key in ipairs({ C.KEY_SEEN, C.KEY_NAME, C.KEY_AUTO }) do
+        if C.get_ext(tr, key) then C.set_ext(tr, key, "") end
+      end
+    end
+  end
+
+  -- delete Foldback's tracks, last first. If one of them opens or closes a folder (only if it
+  -- was dragged into one), hand that folder change to a neighbouring track so your folders keep
+  -- their shape.
+  local ntracks = 0
+  for i = r.CountTracks(0) - 1, 0, -1 do
+    local tr = r.GetTrack(0, i)
+    if gone[C.guid(tr)] then
+      local d = math.floor(r.GetMediaTrackInfo_Value(tr, "I_FOLDERDEPTH"))
+      if d < 0 and i > 0 then
+        local prev = r.GetTrack(0, i - 1)
+        r.SetMediaTrackInfo_Value(prev, "I_FOLDERDEPTH", r.GetMediaTrackInfo_Value(prev, "I_FOLDERDEPTH") + d)
+      elseif d > 0 then
+        local level, n = d, r.CountTracks(0)
+        for j = i + 1, n - 1 do
+          local tj = r.GetTrack(0, j)
+          local dj = r.GetMediaTrackInfo_Value(tj, "I_FOLDERDEPTH")
+          if level + dj <= 0 then
+            r.SetMediaTrackInfo_Value(tj, "I_FOLDERDEPTH", dj + d)   -- its children now sit one level up
+            break
+          end
+          level = level + dj
+        end
+      end
+      r.DeleteTrack(tr)
+      ntracks = ntracks + 1
+    end
+  end
+
+  C.set_project_removed(true)
+  local summary = string.format("removed %d track%s and %d cue send%s", ntracks, ntracks == 1 and "" or "s",
+    sends, sends == 1 and "" or "s")
+  local log = C.new_log("remove.txt")
+  log.w("Removed Foldback from this project:", summary)
+  for _, nm in ipairs(plan.names) do log.w("  deleted track:", nm) end
+  if plan.tagged > 0 then log.w("  cleared Foldback notes on", plan.tagged, "of your tracks") end
+  log.save()
+  return summary
 end
 
 ---------------------------------------------------------------- undo

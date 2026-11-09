@@ -197,6 +197,7 @@ end
 local function rescan()
   C.migrate()
   st.cues, st.listen = C.scan()
+  if next(st.cues) ~= nil and C.project_removed() then C.set_project_removed(false) end
   st.stems = {}
   for _, s in ipairs(cfg.stems) do
     if st.cues[s.id] then st.stems[#st.stems + 1] = s end
@@ -616,10 +617,80 @@ local function settings_popup()
       r.ShowMessageBox(err, TITLE, 0)
     end
   end
+  ImGui.Separator(ctx)
+  if ImGui.IsWindowAppearing(ctx) or not st.rm_quick then st.rm_quick = C.removal_plan() end
+  local nothing = #st.rm_quick.tracks == 0 and st.rm_quick.sends == 0 and st.rm_quick.tagged == 0
+  ImGui.BeginDisabled(ctx, nothing)
+  ImGui.PushStyleColor(ctx, ImGui.Col_Button, rgba(110, 40, 40))
+  ImGui.PushStyleColor(ctx, ImGui.Col_ButtonHovered, rgba(140, 50, 50))
+  ImGui.PushStyleColor(ctx, ImGui.Col_ButtonActive, rgba(165, 58, 58))
+  if ImGui.Button(ctx, "Remove Foldback from this project...") then
+    st.rm_plan = C.removal_plan()
+    st.open_remove = true
+    st.rm_quick = nil
+    ImGui.CloseCurrentPopup(ctx)
+  end
+  ImGui.PopStyleColor(ctx, 3)
+  ImGui.EndDisabled(ctx)
+  if ImGui.IsItemHovered(ctx, ImGui.HoveredFlags_AllowWhenDisabled) then
+    ImGui.SetTooltip(ctx, nothing and "Nothing from Foldback in this project."
+      or "Done tracking? Deletes the cue sends and every track Foldback made in this project\n(asks first; can be undone).")
+  end
   if st.note and r.time_precise() - st.note.t < 12 then
     ImGui.TextColored(ctx, 0x7FD6A8FF, st.note.text)
   end
   ImGui.TextDisabled(ctx, "Foldback " .. C.VERSION .. "   profile: " .. cfg.path)
+  ImGui.EndPopup(ctx)
+end
+
+---------------------------------------------------------------- remove Foldback (confirm first)
+local function remove_modal()
+  if st.open_remove then ImGui.OpenPopup(ctx, "Remove Foldback from this project?"); st.open_remove = false end
+  if not ImGui.BeginPopupModal(ctx, "Remove Foldback from this project?", nil, ImGui.WindowFlags_AlwaysAutoResize) then return end
+  local p = st.rm_plan or { tracks = {}, names = {}, sends = 0, cues = 0, tagged = 0 }
+  ImGui.PushTextWrapPos(ctx, 460)
+  ImGui.Text(ctx, "This deletes, from this project only:")
+  local extra = #p.tracks - p.cues
+  if p.cues > 0 then ImGui.BulletText(ctx, p.cues .. (p.cues == 1 and " cue track" or " cue tracks") ..
+    (C.feature(cfg, "cue_reverb") and " (and the reverb inside them)" or "")) end
+  if extra > 0 then
+    local others = {}
+    for _, tr in ipairs(p.tracks) do
+      if not C.get_ext(tr, C.KEY_STEM) and r.ValidatePtr2(0, tr, "MediaTrack*") then others[#others + 1] = C.name(tr) end
+    end
+    ImGui.BulletText(ctx, table.concat(others, ", "))
+  end
+  if p.sends > 0 then ImGui.BulletText(ctx, p.sends .. (p.sends == 1 and " cue send" or " cue sends") .. " from your tracks") end
+  ImGui.Spacing(ctx)
+  ImGui.TextDisabled(ctx, "Your own tracks, their other sends, faders, pans, plug-ins and names are not touched, and REAPER's metronome is left alone. " ..
+    "New tracks won't get cue sends in this project until you set it up again. You can undo this (Edit > Undo).")
+  ImGui.PopTextWrapPos(ctx)
+  ImGui.Spacing(ctx)
+  local go = false
+  ImGui.PushStyleColor(ctx, ImGui.Col_Button, rgba(150, 45, 45))
+  ImGui.PushStyleColor(ctx, ImGui.Col_ButtonHovered, rgba(180, 55, 55))
+  ImGui.PushStyleColor(ctx, ImGui.Col_ButtonActive, rgba(200, 62, 62))
+  if ImGui.Button(ctx, "Remove", 110, 0) then go = true end
+  ImGui.PopStyleColor(ctx, 3)
+  ImGui.SameLine(ctx, 0, 10)
+  local cancel = ImGui.Button(ctx, "Cancel", 110, 0)
+  if ImGui.IsWindowAppearing(ctx) then ImGui.SetItemDefaultFocus(ctx) end
+  if cancel or ImGui.IsKeyPressed(ctx, ImGui.Key_Escape, false) then
+    st.rm_plan = nil
+    ImGui.CloseCurrentPopup(ctx)
+  elseif go then
+    st.rm_plan = nil
+    ImGui.CloseCurrentPopup(ctx)
+    local ok, res = pcall(C.remove_from_project)
+    if ok then
+      st.removed_note = "Foldback " .. res .. "."
+      append_auto_log("removed from this project: " .. res)
+    else
+      r.ShowMessageBox("Removing Foldback stopped with an error:\n\n" .. tostring(res) ..
+        "\n\nUse Edit > Undo if anything looks half done.", TITLE, 0)
+    end
+    st.cc = -1
+  end
   ImGui.EndPopup(ctx)
 end
 
@@ -943,6 +1014,7 @@ local function frame()
   local proj = r.EnumProjects(-1)
   local cc = r.GetProjectStateChangeCount(0)
   if proj ~= st.proj or cc ~= st.cc or not all_valid() then
+    if proj ~= st.proj then st.removed_note = nil end
     st.proj, st.cc = proj, cc
     rescan()
     if not st.opened[proj] then
@@ -967,7 +1039,7 @@ local function frame()
       end
       -- brand-new, unsaved, empty project: create the default cue stems automatically
       local _, fn = r.EnumProjects(-1, "")
-      if opt.auto_setup_new_projects ~= false and #st.stems == 0 and r.CountTracks(0) == 0
+      if opt.auto_setup_new_projects ~= false and #st.stems == 0 and r.CountTracks(0) == 0 and not C.project_removed()
          and (fn == nil or fn == "") and not st.setup_done[proj] then
         st.setup_done[proj] = true
         FOLDBACK_SILENT = opt.default_stems or "Drums Bass Guitars Vocals"
@@ -1009,7 +1081,17 @@ local function frame()
     if #st.stems == 0 then
       if ImGui.Button(ctx, "Settings") then st.open_settings = true end
       ImGui.SameLine(ctx)
-      ImGui.Text(ctx, "No cues in this project yet. Settings > Set up this session.")
+      if C.project_removed() then
+        ImGui.Text(ctx, st.removed_note or "Foldback is off in this project (it was removed for mixing).")
+        ImGui.SameLine(ctx, 0, 12)
+        if ImGui.Button(ctx, "Set up Foldback in this project...") then
+          st.removed_note = nil
+          dofile(script_dir .. "Foldback_Setup.lua")
+          st.cc = -1
+        end
+      else
+        ImGui.Text(ctx, "No cues in this project yet. Settings > Set up this session.")
+      end
     else
       cues_section()
       ImGui.SameLine(ctx, 0, 18)
@@ -1018,6 +1100,7 @@ local function frame()
     if gutter > 0 then ImGui.Unindent(ctx, gutter) end
     detail_popup()
     settings_popup()
+    remove_modal()
     keyboard_passthrough()
     ImGui.End(ctx)
   end
