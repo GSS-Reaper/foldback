@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Foldback: User Manual</title>
+  <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+  body{font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;max-width:860px;margin:2rem auto;padding:0 1rem;color:#1f2328;background:#fff}
+  h1,h2,h3{line-height:1.25} h2{border-bottom:1px solid #d0d7de;padding-bottom:.3rem;margin-top:2rem}
+  img{max-width:100%;height:auto;border:1px solid #d0d7de;border-radius:6px;margin:.5rem 0}
+  a{color:#0969da} code{background:#eef1f4;padding:.1em .3em;border-radius:4px}
+  .ui{color:#8E2626}
+  @media (prefers-color-scheme:dark){body{background:#0d1117;color:#e6edf3} h2{border-color:#30363d} img{border-color:#30363d} a{color:#58a6ff} code{background:#21262d} .ui{color:#ff8a8a}}
+  </style>
+</head>
+<body>
+<h1 id="foldback-user-manual">Foldback: User Manual</h1>
+<p>Headphone (cue) mixes for REAPER · Nov 9, 2026</p>
+<p><strong>Contents</strong></p>
+<ul>
+<li><p><a href="#what-foldback-is">What Foldback is</a></p></li>
+<li><p><a href="#before-you-start">Before you start</a></p></li>
+<li><p><a href="#installing-with-reapack">Installing with ReaPack</a></p></li>
+<li><p><a href="#the-panel">The panel</a></p></li>
+<li><p><a href="#first-time-setup">First-time setup</a></p></li>
+<li><p><a href="#stems-mode">Stems mode</a></p></li>
+<li><p><a href="#mixes-mode">Mixes mode</a></p></li>
+<li><p><a href="#listen-talkback-click-and-metronome">Listen, Talkback, Click and Metronome</a></p></li>
+<li><p><a href="#moving-on-to-mixing">Moving on to mixing</a></p></li>
+<li><p><a href="#settings-reference">Settings reference</a></p></li>
+<li><p><a href="#troubleshooting">Troubleshooting</a></p></li>
+</ul>
+<h2 id="what-foldback-is">What Foldback is</h2>
+<p>Foldback is a free REAPER script that builds and manages headphone cue mixes for the artists you are recording. It creates the cue tracks, wires up the sends and hardware outputs, and gives you one panel to control it all while you track.</p>
+<p>It has two cue modes to select from:</p>
+<ul>
+<li><p><strong>Stems.</strong> You build a small set of shared groups (for example Drums, Guitars, Bass, Vocals) and send each performer the same groups. This is useful for when the artist has a personal mixer that allows them to control levels for themselves individually. A Metronome row is also available; it only reserves an output for the metronome.</p></li>
+<li><p><strong>Mixes.</strong> You build one stereo mix per performer (Artist 1 to Artist 4 by default), and every track can be sent to each mix at its own level. A <strong><span class="ui">Start from my mix</span></strong> option begins each cue mix from your current project mix. New tracks have a silent send added to them, so nothing unexpected reaches anyone's headphones.</p></li>
+</ul>
+<p>On top of the cue mixes, Foldback provides:</p>
+<ul>
+<li><p><strong>Listen</strong>, to audition any cue in your own monitors.</p></li>
+<li><p><strong>Talkback</strong>, a hold-to-talk button that sends your microphone to the performers.</p></li>
+<li><p><strong>A click track</strong> (mix mode) or REAPER's own metronome (stems mode).</p></li>
+<li><p><strong>A safety limiter</strong> on every cue, to protect performers' hearing.</p></li>
+<li><p><strong>Profiles</strong>, so each studio or setup keeps its own settings.</p></li>
+</ul>
+<p>Foldback is free software released under the GPL-3.0 license.</p>
+<h2 id="before-you-start">Before you start</h2>
+<p>You need:</p>
+<ul>
+<li><p><strong>REAPER</strong> (a current version).</p></li>
+<li><p><strong>ReaPack</strong>, the REAPER package manager. Foldback is installed and updated through it.</p></li>
+<li><p><strong>ReaImGui</strong>, a library that draws Foldback's windows. It is required, and ReaPack does not install it automatically, so you add it yourself (see the next section).</p></li>
+<li><p><strong>Optional:</strong> the SWS extension and js_ReaScriptAPI. Foldback works without them, but some conveniences depend on them being present.</p></li>
+<li><p>An audio interface with enough spare hardware outputs to feed your headphone amplifiers or cue boxes. Each cue (stem or mix) is sent to its own hardware output, stereo or mono.</p></li>
+<li><p>For talkback: a microphone connected to an input of your interface.</p></li>
+</ul>
+<p>Foldback is not tied to any particular interface. You choose each cue's output from a list of the outputs REAPER reports for your device.</p>
+<h2 id="installing-with-reapack">Installing with ReaPack</h2>
+<p><strong>1. Add the Foldback repository.</strong></p>
+<ol type="1">
+<li><p>In REAPER, choose <strong>Extensions &gt; ReaPack &gt; Import repositories</strong>.</p></li>
+<li><p>Paste the Foldback repository address (<a href="https://github.com/GSS-Reaper/foldback/raw/main/Foldback-ReaPack/index.xml">https://github.com/GSS-Reaper/foldback/raw/main/Foldback-ReaPack/index.xml</a>) and click <strong><span class="ui">OK</span></strong>.</p></li>
+<li><p>Accept the prompt to add the repository.</p></li>
+</ol>
+<p><img src="images/reapack-import-repositories-dialog.png" alt="ReaPack Import repositories dialog" /></p>
+<p><strong>2. Install Foldback.</strong></p>
+<ol type="1">
+<li><p>Choose <strong>Extensions &gt; ReaPack &gt; Browse packages</strong>.</p></li>
+<li><p>Type foldback in the filter box.</p></li>
+<li><p>Right-click the Foldback entry and choose Install, then click OK / Apply.</p></li>
+</ol>
+<p><img src="images/browse-packages-filtered-on-foldback.png" alt="Browse packages filtered on foldback" /></p>
+<p><strong>3. Install ReaImGui.</strong></p>
+<ol type="1">
+<li><p>In <strong><span class="ui">Browse packages</span></strong>, search for ReaImGui.</p></li>
+<li><p>Right-click it, choose Install, and apply.</p></li>
+<li><p>Restart REAPER if it asks you to.</p></li>
+</ol>
+<p><img src="images/reaimgui-in-reapack-browse-packages.png" alt="ReaImGui in ReaPack Browse packages" /></p>
+<p><strong>4. Find the actions.</strong></p>
+<p>Open the Actions list (press ? or use <strong>Actions &gt; Show action list</strong>) and type foldback in the filter. The Foldback actions appear.</p>
+<p><img src="images/actions-list-filtered-on-foldback.png" alt="Actions list filtered on foldback" /></p>
+<p><strong>Updating.</strong> Use <strong>Extensions &gt; ReaPack &gt; Synchronize packages</strong>. When a new version is published it is offered there; if Browse packages still shows an older version number, synchronize again.</p>
+<h2 id="the-panel">The panel</h2>
+<p>Start the Foldback panel from the Actions list. Until a session has been set up, the panel is empty and offers a <strong><span class="ui">Settings</span></strong> button and a message that no cues exist yet.</p>
+<p><img src="images/the-empty-panel-before-any-session-is-set-up.png" alt="The empty panel before any session is set up" /></p>
+<p>See <a href="#first-time-setup">First-Time Setup</a> below for instructions on how to set up your cues for the first time.</p>
+<p>Once cues exist, the panel is split in two:</p>
+<ul>
+<li><p><strong>Left: the cues.</strong> One column per cue, in the cue's color, with the cue's name at the top. Each column holds the cue's overall level fader, an output label, and its <strong><span class="ui">Listen</span></strong> button. Down the left edge, a label column holds the <strong><span class="ui">Settings</span></strong> button and the <strong><span class="ui">Talkback</span></strong> button. Click on the cue name to bring up a pop-up that allows you to view and adjust all tracks sending to that cue.</p></li>
+<li><p><strong>Right: Selected tracks.</strong> Select one or more tracks in REAPER and their sends into each cue appear here, lined up under the cue columns. Select nothing and the section simply says to select tracks. With several tracks selected, an All selected row appears that moves all of their sends together.</p></li>
+</ul>
+<p><img src="images/the-panel-in-mixes-mode.png" alt="The panel in mixes mode" /></p>
+<p><img src="images/the-panel-in-stems-mode.png" alt="The panel in stems mode" /></p>
+<p><strong>Level boxes.</strong> Faders in Foldback are drag boxes. Drag to change the level; double-click to return to the default (0 dB for sends and cue levels). Shift-click a send to mute or unmute it. Right-click a send for a menu with <strong><span class="ui">Set to 0 dB</span></strong> and <strong><span class="ui">Remove send</span></strong>. A dash or plus where a send would be means there is no send yet; click it to add one.</p>
+<p><img src="images/right-click-menu-on-a-send.png" alt="Right-click menu on a send" /></p>
+<p><strong>Docking.</strong> The <strong><span class="ui">Settings</span></strong> pop-up has <strong><span class="ui">Dock in REAPER docker</span></strong> and <strong><span class="ui">Float</span></strong> buttons, so the panel can live in a REAPER docker or float as its own window.</p>
+<p><img src="images/foldback-docked-in-the-reaper-window.png" alt="Foldback docked in the REAPER window" /></p>
+<p><strong>Profile.</strong> The <strong><span class="ui">Settings</span></strong> pop-up also shows which profile is in use, with buttons to open the profile file, open the logs folder, and reload the profile.</p>
+<h2 id="first-time-setup">First-time setup</h2>
+<p>Setup happens in two steps: First, you describe your cues in <strong><span class="ui">Settings</span></strong>, then you build them in the current project with <strong><span class="ui">Set up this session</span></strong>.</p>
+<p><strong>1. Choose a profile.</strong> A profile holds all of Foldback's settings for one studio or setup. Foldback ships with two neutral starting profiles: <strong><span class="ui">Starter Mixes</span></strong> (mix mode, one mix per performer) and <strong><span class="ui">Starter Stems</span></strong> (stem mode). Pick the one that matches how you work. You can make your own with New, Duplicate, Rename and Delete in the Settings window.</p>
+<p><strong>2. Open <span class="ui">Settings</span> and go to the Cues tab.</strong> Here each cue has a name, a type (stereo or mono), and a hardware output. Set each cue's output to the interface output that feeds that performer's headphones. Two cues cannot share the same output; Foldback will tell you if they conflict. In mix mode a button replaces the list with Artist 1 to Artist 4; in stems mode a button replaces it with Drums, Guitars, Bass and Vocals. Rename any cue to suit your session, and add or delete additional cues as needed.</p>
+<p><img src="images/settings-cues-tab-mixes-mode.png" alt="Settings, Cues tab, mixes mode" /></p>
+<p><img src="images/settings-cues-tab-stems-mode.png" alt="Settings, Cues tab, stems mode" /></p>
+<p><img src="images/choosing-a-cues-output.png" alt="Choosing a cue&#39;s output" /></p>
+<p><strong>3. Use the Options tab</strong> to set the options you care about (see the Settings discussion below), especially the send mode, the safety limiter and, if you want it, talkback. Click <strong><span class="ui">Save</span></strong>.</p>
+<p><strong>4. Run <span class="ui">Set up this session</span>.</strong> From the panel's <strong><span class="ui">Settings</span></strong> pop-up choose <strong><span class="ui">Set up this session</span></strong> (cues and tracks)... The setup window opens:</p>
+<ul>
+<li><p><strong>Section 1 lists your cues</strong> with a tick box each. Untick any you do not need in this project. Cues you remove are listed in orange along with the note that their sends will be removed.</p></li>
+<li><p><strong>Section 2 is a grid of your tracks against the cues.</strong> Tick a box to send that track to that cue. All and None buttons fill a whole column. Untick any you do not want.</p></li>
+<li><p>The footer shows the send mode and starting level that new sends will use.</p></li>
+</ul>
+<p><img src="images/the-set-up-this-session-window.png" alt="The Set up this session window" /></p>
+<p><img src="images/the-set-up-this-session-window-in-stems-mode.png" alt="The Set up this session window in stems mode" /></p>
+<p>Click <strong><span class="ui">Set up</span></strong>. Foldback creates the hidden cue tracks, the sends, and (if enabled) the CUE LISTEN, TALKBACK and Click tracks, and assigns hardware outputs. A conflict message in red disables the button until it is fixed.</p>
+<p><strong>Running it again.</strong> <strong><span class="ui">Set up this session</span></strong> is safe to run again after you add tracks or change cues. Sends you made by hand are left alone unless you have turned on the option to reset existing sends to the chosen send mode.</p>
+<h2 id="stems-mode">Stems mode</h2>
+<p>In stems mode each cue is a shared group. Every performer who is given a group hears it at the level you set, so one cue fader changes what everyone on that output hears.</p>
+<p><strong>Defining the cues.</strong> In <strong><span class="ui">Settings &gt; Cues</span></strong>, use the <strong><span class="ui">Starter Stems</span></strong> profile or click the button that replaces the list with Drums, Guitars, Bass and Vocals (Drums and Guitars stereo; Bass and Vocals mono). Rename, add or remove rows as needed, and choose each row's output from its drop-down. A Metronome row can be kept in the list; it does not create a cue, it only reserves an output so nothing else is assigned to it.</p>
+<p><strong>Getting tracks into the groups.</strong> In <strong><span class="ui">Set up this session</span></strong>, tick the stems each track should feed in the grid. After that, you can add or remove a send at any time from the Selected tracks section: select the track, then click the plus under the cue, or right-click an existing send and choose <strong><span class="ui">Remove send</span></strong>. A track you add to the project later has no sends until you add them this way.</p>
+<p><strong>Balancing a stem.</strong> Select the tracks that feed a stem and drag a send to change that track's level inside the stem. The cue's own level box (at the top of its column) sets the overall stem level on the output. Double-click a level box to return it to 0 dB; shift-click to mute or unmute it.</p>
+<p><img src="images/stems-mode-with-a-track-selected.png" alt="Stems mode with a track selected" /></p>
+<p><strong>Moving several tracks together.</strong> With several tracks selected, the All selected row moves every selected track's send into that cue by the same amount. Double-click sets them all to 0 dB; Shift-click mutes or unmutes them.</p>
+<p><strong>The Metronome column.</strong> If your profile has a Metronome row, the panel shows an extra column with a single button carrying that row's name. Click it to open REAPER's own metronome settings. Foldback does not change the metronome itself: you point REAPER's metronome output at the output reserved for the row. Because the REAPER metronome goes straight to hardware, it cannot be heard through Listen.</p>
+<p><img src="images/the-metronome-button-and-its-tooltip.png" alt="The Metronome button and its tooltip" /></p>
+<p><img src="images/reapers-metronome-settings.png" alt="REAPER&#39;s metronome settings" /></p>
+<p><strong>Pan.</strong> Per-send pan boxes are part of mixes mode.</p>
+<h2 id="mixes-mode">Mixes mode</h2>
+<p>In mixes mode each cue is a complete stereo mix for one performer. By default there are four: Artist 1 to Artist 4. Rename them as needed, or add more mixes, in <strong><span class="ui">Settings &gt; Cues</span></strong>.</p>
+<p><strong>Every track can reach every mix.</strong> In the Selected tracks section, each selected track has a level box and a pan box under every mix. Drag a level to set how loud that track is in that performer's headphones; drag a pan box to place it (L100 to R100, C in the center; hold Alt for fine control; double-click returns to center).</p>
+<p><strong>New tracks start silent.</strong> With the default option <strong><span class="ui">New mix sends start off (silent)</span></strong>, a track added to the project gets a send to every mix, but those sends are off. Nothing reaches anyone's headphones until you raise it. Two Options control this: <strong><span class="ui">New tracks get</span></strong> (<strong><span class="ui">A send to every mix</span></strong>, or <strong><span class="ui">No sends until I add them</span></strong>) and the starting level, if you turn the silent option off.</p>
+<p><strong>Starting from your own mix.</strong> At the bottom of a mix's pop-up is a <strong><span class="ui">Start from my mix</span></strong> button. It makes a one-time copy of each track's fader level, pan and mute into that mix, as a starting point for that performer. It replaces what is in the mix at that moment, so use it before you fine-tune, not after.</p>
+<p><strong>Cue pop-up.</strong> Click a cue's name at the top of its column to open its pop-up, showing that cue's name and output, the <strong><span class="ui">Start from my mix</span></strong> button, and <strong><span class="ui">Tick all</span></strong> / <strong><span class="ui">Tick none</span></strong> for moving tracks together.</p>
+<p><img src="images/a-cues-pop-up.png" alt="A cue&#39;s pop-up" /></p>
+<p><strong>Working across tracks.</strong> Tick tracks in the pop-up (<strong><span class="ui">Tick all</span></strong> / <strong><span class="ui">Tick none</span></strong>) to move them together: the same dB change, a double-click to reset, or Shift-click to mute together.</p>
+<p><strong>The Click track.</strong> In mix mode, Foldback can add a track named Click that sounds on every beat of the project's tempo and time signature and follows tempo changes. It gets its own send to every mix, off at first, so each performer sets their own click level and pan. Turn it on with <strong><span class="ui">Add a click track that feeds every mix</span></strong> in <strong><span class="ui">Settings &gt; Options</span></strong>, save the profile, and run <strong><span class="ui">Set up this session</span></strong>. It does not use REAPER's metronome settings.</p>
+<h2 id="listen-talkback-click-and-metronome">Listen, Talkback, Click and Metronome</h2>
+<h3 id="listen">Listen</h3>
+<p>Listen lets you hear a single cue on your own monitors, exactly as the performer hears it.</p>
+<ol type="1">
+<li><p>Click the <strong><span class="ui">Listen</span></strong> button under a cue. It turns red and reads LISTENING.</p></li>
+<li><p>Your monitors now play that cue, and the normal master output is muted while you listen.</p></li>
+<li><p>Click the button again to go back to your own mix.</p></li>
+<li><p>To hear several cues together, Shift-click additional <strong><span class="ui">Listen</span></strong> buttons.</p></li>
+</ol>
+<p>Listen uses a hidden track called CUE LISTEN. By default it plays on the same output pair as your master track; to use a different pair, change <strong><span class="ui">Speaker outputs</span></strong> in the <strong><span class="ui">Listen</span></strong> section of <strong><span class="ui">Settings &gt; Cues</span></strong>. If a project was made before a Listen output was chosen, Foldback adds the Listen track the first time you press the button.</p>
+<p><img src="images/listen-on-the-button-reads-listening.png" alt="Listen on: the button reads LISTENING" /></p>
+<p><img src="images/several-cues-combined-with-shift-click.png" alt="Several cues combined with Shift-click" /></p>
+<h3 id="talkback">Talkback</h3>
+<p>Talkback lets you speak into every performer's headphones.</p>
+<ol type="1">
+<li><p>In <strong><span class="ui">Settings &gt; Options</span></strong>, tick <strong><span class="ui">Add a talkback button</span></strong> and choose your microphone's input (Microphone input) from the drop-down. The microphone is used as a mono input.</p></li>
+<li><p><strong><span class="ui">Save</span></strong>, and run <strong><span class="ui">Set up this session</span></strong> so the TALKBACK track exists.</p></li>
+<li><p>In the panel, press and hold the <strong><span class="ui">Talkback</span></strong> button with the mouse. It turns red while held. Speak, then let go; the cues close again at once.</p></li>
+</ol>
+<p><img src="images/choosing-the-microphone-input.png" alt="Choosing the microphone input" /></p>
+<p>Foldback applies the chosen input to the TALKBACK track every time you press the button, so changing the input in <strong><span class="ui">Settings</span></strong> takes effect immediately. If no input is chosen or found, the button's tooltip tells you. To test without a performer, hold the button with the transport stopped and watch the thin meter bars under each cue move.</p>
+<p><img src="images/talkback-held-down.png" alt="Talkback held down" /></p>
+<h3 id="click-track-mixes-mode">Click track (mixes mode)</h3>
+<p>The Click track is described under Mixes mode. In short: tick <strong><span class="ui">Add a click track that feeds every mix</span></strong>, save, run <strong><span class="ui">Set up this session</span></strong>, and each performer gets their own click level and pan.</p>
+<h3 id="metronome-stems-mode">Metronome (stems mode)</h3>
+<p>In stems mode there is no Foldback click. The Metronome row only reserves an output, and its panel button opens REAPER's metronome settings. In those settings, send the metronome to the reserved output. Listen cannot play the metronome because REAPER sends it directly to hardware.</p>
+<h2 id="moving-on-to-mixing">Moving on to mixing</h2>
+<p><img src="images/remove-foldback-from-this-project.png" alt="The Settings pop-up, with the Remove Foldback from this project button at the bottom" /></p>
+<p>When tracking is done, <strong><span class="ui">Remove Foldback from this project...</span></strong> takes every cue send and every Foldback track out of the project in one step, so your mix session starts clean.</p>
+<ol type="1">
+<li><p>Click <strong><span class="ui">Settings</span></strong> in the panel.</p></li>
+<li><p>Click the red <strong><span class="ui">Remove Foldback from this project...</span></strong> button at the bottom of the pop-up. It is greyed out when the project has nothing from Foldback.</p></li>
+<li><p>A window lists what will go: the number of cue tracks, the other Foldback tracks by name (CUE LISTEN, TALKBACK, Click) and the number of cue sends on your tracks.</p></li>
+<li><p>Click <strong><span class="ui">Remove</span></strong>, or <strong><span class="ui">Cancel</span></strong> (or press Esc) to leave everything as it is.</p></li>
+</ol>
+<p><strong>What is removed:</strong> every cue track, CUE LISTEN, TALKBACK, the Click track, every send from your tracks into those tracks, and Foldback's hidden notes on your tracks. If Listen or Talkback is on, it is switched off first, so your master's mute goes back to how you had it.</p>
+<p><strong>What is left alone:</strong> your own tracks, their other sends (reverb and effect buses, for example), faders, pans, plug-ins, names and folders, and REAPER's metronome settings.</p>
+<p><strong>Undo.</strong> The whole removal is one undo step. <strong><span class="ui">Edit &gt; Undo</span></strong> brings everything back, and the panel shows your cues again.</p>
+<p><strong>Afterwards.</strong> Foldback stays off in that project: new tracks get no cue sends. The panel says what was removed and shows a <strong><span class="ui">Set up Foldback in this project...</span></strong> button in case you go back to tracking. Other projects are not affected.</p>
+<h2 id="settings-reference">Settings reference</h2>
+<p>Open <strong><span class="ui">Settings</span></strong> from the <strong><span class="ui">Settings</span></strong> button in the panel. The window has a profile selector at the top (with New, Duplicate, Rename and Delete) and two tabs below: <strong><span class="ui">Cues</span></strong> and <strong><span class="ui">Options</span></strong>. At the bottom are <strong><span class="ui">Save</span></strong>, <strong><span class="ui">Revert</span></strong>, <strong><span class="ui">Set up this session</span></strong>... and <strong><span class="ui">Close</span></strong>. Changes apply when you save; if you close with unsaved changes, Foldback asks whether to save them.</p>
+<h3 id="cues-tab">Cues tab</h3>
+<ul>
+<li><p><strong><span class="ui">Cue type</span>.</strong> Stems (groups of instruments) or Mixes (one stereo mix per performer). Switching to mixes makes every cue stereo.</p></li>
+<li><p><strong>The cue list.</strong> One row per cue: name, type (stereo or mono), output, color, and a <strong><span class="ui">Remove</span></strong> button. <strong><span class="ui">Add cue</span></strong> adds a row. Outputs come from the list REAPER reports for your interface; <strong><span class="ui">Refresh output list</span></strong> re-reads it after you change interface settings.</p></li>
+<li><p><strong><span class="ui">Replace cues with...</span></strong> buttons. Artist 1-4 in mixes mode; Drums, Guitars, Bass, Vocals in stems mode. <strong><span class="ui">Revert</span></strong> undoes the replacement.</p></li>
+<li><p><strong><span class="ui">Listen</span>.</strong> <strong><span class="ui">Speaker outputs</span></strong>: by default the same pair as your master track.</p></li>
+</ul>
+<h3 id="options-tab">Options tab</h3>
+<ul>
+<li><p><strong><span class="ui">Cue sends</span>.</strong> Where sends into the cues come from: pre-fader (post-FX) is the default, so your faders, mutes and solos never change what performers hear. A checkbox decides whether <strong><span class="ui">Set up this session</span></strong> also resets existing cue sends to this mode. In mixes mode: <strong><span class="ui">New mix sends start off (silent)</span></strong>; <strong><span class="ui">New tracks get</span></strong>; and <strong><span class="ui">Add a click track that feeds every mix</span></strong>.</p></li>
+<li><p><strong><span class="ui">Talkback</span>.</strong> <strong><span class="ui">Add a talkback button</span></strong>, and <strong><span class="ui">Microphone input</span></strong>.</p></li>
+<li><p><strong><span class="ui">Safety limiter</span>.</strong> <strong><span class="ui">Limit the loudest peaks in every cue</span></strong> puts a limiter last on each cue track so a sudden peak (feedback, a bad fader move) cannot exceed the ceiling. The default <strong><span class="ui">Ceiling</span></strong> is -3 dB; lower is quieter and safer. It is not a compressor and does nothing to normal levels.</p></li>
+<li><p><strong><span class="ui">Projects</span>.</strong> <strong><span class="ui">Set up new projects automatically</span></strong>, and <strong><span class="ui">Turn Listen off when a project opens</span></strong> (so a project saved while listening does not open with your speakers muted).</p></li>
+<li><p><strong><span class="ui">Cue tracks</span>.</strong> <strong><span class="ui">Hide cue tracks in the arrange view</span></strong> and in REAPER's mixer (they still work), a <strong><span class="ui">Cue track name prefix</span></strong> (default style: CUE Drums) and the Listen track's name and color. Hiding takes effect the next time you run <strong><span class="ui">Set up this session</span></strong>.</p></li>
+<li><p><strong><span class="ui">Panel</span>.</strong> Panel colors for the background, buttons, level boxes, meters and the lit Listen button. They affect only Foldback's panel, not your REAPER theme or track colors. Reset buttons restore the defaults.</p></li>
+</ul>
+<p><img src="images/settings-options-tab.png" alt="Settings, Options tab" /></p>
+<p><img src="images/options-tab-lower-half.png" alt="Options tab, lower half" /></p>
+<p><img src="images/panel-colors.png" alt="Panel colors" /></p>
+<p><img src="images/cue-tracks-shown-in-reapers-mixer.png" alt="Cue tracks shown in REAPER&#39;s mixer" /></p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="troubleshooting-1">Troubleshooting</h3>
+<ul>
+<li><p><strong>The Foldback actions do nothing or the panel will not open.</strong> Check that ReaImGui is installed (<strong>Extensions &gt; ReaPack &gt; Browse packages</strong>) and restart REAPER.</p></li>
+<li><p><strong>The panel says there are no cues.</strong> Open <strong><span class="ui">Settings</span></strong> and run <strong><span class="ui">Set up this session</span></strong>.</p></li>
+<li><p><strong>A performer hears nothing.</strong> Check, in order: the cue's output in <strong><span class="ui">Settings &gt; Cues</span></strong>; that the track actually has a send to that cue (a plus means no send yet); that the send is not muted; in mixes mode, that the send was raised, because new mix sends start silent; and that the cue's own level box is not turned down.</p></li>
+<li><p><strong>Two cues refuse to set up.</strong> The setup window shows a red message when two cues share an output. Give each cue its own output.</p></li>
+<li><p><strong>Talkback is silent.</strong> Make sure <strong><span class="ui">Add a talkback button</span></strong> is ticked, a <strong><span class="ui">Microphone input</span></strong> is chosen, and the profile is saved. Hover the <strong><span class="ui">Talkback</span></strong> button; its tooltip says when no input is chosen or found. Hold the button and watch the thin meter bars under the cues to confirm signal.</p></li>
+<li><p><strong>Browse packages shows an older version.</strong> <strong>Synchronize packages</strong> again after the new version has been published.</p></li>
+<li><p><strong>Your speakers are silent after opening a project.</strong> The project was saved while Listen was on. Click <strong><span class="ui">LISTENING</span></strong> to turn it off, and leave <strong><span class="ui">Turn Listen off when a project opens</span></strong> ticked.</p></li>
+<li><p><strong>The metronome settings do not open when you click the <span class="ui">Metronome</span> button.</strong> Click it again; Foldback opens the REAPER settings a moment after the click.</p></li>
+<li><p><strong>Cue tracks are missing from the track list.</strong> They are hidden by default. Untick <strong><span class="ui">Hide cue tracks in the arrange view</span></strong> or in REAPER's mixer, then run <strong><span class="ui">Set up this session</span></strong> again.</p></li>
+<li><p><strong>Logs.</strong> The <strong><span class="ui">Settings</span></strong> pop-up has an <strong><span class="ui">Open logs folder</span></strong> button, useful when reporting a problem.</p></li>
+</ul>
+<h3 id="license">License</h3>
+<p>Foldback is free software, released under the GNU General Public License, version 3 (GPL-3.0). Copyright Greater Society Studios.</p>
+</body>
+</html>
